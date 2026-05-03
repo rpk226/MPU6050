@@ -70,21 +70,18 @@ When connected via USB, the board appears as:
 List available serial ports:
 
 ```bash
-ls /dev/ttyACM*
+ls /dev/ttyACM*  ```
+
 
 🖥️ Viewing Raw Data in Terminal
 
 You can view the raw UART data using screen:
 
+```bash 
 screen /dev/ttyACM0 115200
-Exit screen
+``` 
 
-Press:
-
-Ctrl + A, then K, then Y
-🐍 Python Setup
-Create a Virtual Environment
-python3 -m venv .venv
-source .venv/bin/activate
 Install Dependencies
+``` bash 
 pip install pyserial matplotlib
+```
