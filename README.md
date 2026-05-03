@@ -70,7 +70,8 @@ When connected via USB, the board appears as:
 List available serial ports:
 
 ```bash
-ls /dev/ttyACM*  ```
+ls /dev/ttyACM* 
+```
 
 
 🖥️ Viewing Raw Data in Terminal
