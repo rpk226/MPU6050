@@ -22,12 +22,14 @@
 #include <string.h>
 
 #define MPU6050_ADDR (0x68 << 1)
+#define ALPHA 0.2
 
 uint8_t data[14];
 
 int16_t Acc_X, Acc_Y, Acc_Z;
 int16_t Gyro_X, Gyro_Y, Gyro_Z;
 int16_t Temp;
+float Ax_f = 0, Ay_f = 0, Az_f = 0;
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -191,10 +193,15 @@ int main(void)
   {
       MPU6050_Read();
 
-      // Convert accelerometer (±2g → 16384 LSB/g)
-      Ax = Acc_X / 16384.0;
-      Ay = Acc_Y / 16384.0;
-      Az = Acc_Z / 16384.0;
+      // Convert raw to g
+      float Ax = Acc_X / 16384.0;
+      float Ay = Acc_Y / 16384.0;
+      float Az = Acc_Z / 16384.0;
+
+      // Low-pass filter
+      Ax_f = ALPHA * Ax + (1 - ALPHA) * Ax_f;
+      Ay_f = ALPHA * Ay + (1 - ALPHA) * Ay_f;
+      Az_f = ALPHA * Az + (1 - ALPHA) * Az_f;
 
       // Convert gyro (±250°/s → 131 LSB/(°/s))
       Gx = Gyro_X / 131.0;
@@ -204,18 +211,16 @@ int main(void)
       // Convert temperature
       temperature = (Temp / 340.0) + 36.53;
 
-      totalg=sqrt(Ax*Ax+Ay*Ay+Az*Az);
-
       //sprintf(buffer,"Ax:%.2f Ay:%.2f Az:%.2f| totalG:%.2f  | Temp:%.2f | Gx:%.2f Gy:%.2f Gz:%.2f\r\n", Ax, Ay, Az,totalg, temperature, Gx, Gy, Gz);
 
       sprintf(buffer,
-          "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\r\n",
+          "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\r\n",
           Ax, Ay, Az,
-          temperature,
-          Gx, Gy, Gz);
+          Ax_f, Ay_f, Az_f);
+
       HAL_UART_Transmit(&huart2, (uint8_t*)buffer, strlen(buffer), 100);
 
-      HAL_Delay(100);
+      HAL_Delay(10);
   }
   /* USER CODE END 3 */
 }
