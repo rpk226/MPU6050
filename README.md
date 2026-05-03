@@ -47,12 +47,12 @@ Configured using STM32CubeIDE:
 
 The STM32 sends sensor data over UART in CSV format:
 
-Ax,Ay,Az,Temp,Gx,Gy,Gz
+Ax,Ay,Az,Ax_f,Ay_f,Az_f
 
 
 Example:
 
-0.01,-0.98,1.00,36.5,0.02,-0.01,0.03
+0.10,-0.95,1.02,0.08,-0.90,1.00
 
 
 ---
@@ -86,3 +86,13 @@ Install Dependencies
 ``` bash 
 pip install pyserial matplotlib
 ```
+
+## Low-Pass Filter (LPF)
+The filtered signal is computed as: 
+y[n] = α · x[n] + (1 - α) · y[n-1]
+Where:
+- `x[n]` = current raw sensor value  
+- `y[n]` = filtered output  
+- `α` (alpha) = smoothing factor (0 < α ≤ 1)
+
+---
